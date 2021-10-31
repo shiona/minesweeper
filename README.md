@@ -1,13 +1,15 @@
-# minesweeper
-Light version of [Microsoft Minesweeper](https://en.wikipedia.org/wiki/Microsoft_Minesweeper) for Linux. Some interesting implementation moments are described [here](http://rusya7.blogspot.co.uk/2016/10/minesweeper-for-linux-just-for-fun.html).
+# minesweeper with selectable "sweeper size"
 
-1. [Required dependencies](https://github.com/rdiachenko/minesweeper#required-dependencies)
-2. [Build and install](https://github.com/rdiachenko/minesweeper#build-and-install)
-3. [Launch](https://github.com/rdiachenko/minesweeper#launch)
-4. [Launch with default configuration](https://github.com/rdiachenko/minesweeper#launch-with-default-configuration)
-5. [Launch with custom configuration](https://github.com/rdiachenko/minesweeper#launch-with-custom-configuration)
-  1. [Classic style](https://github.com/rdiachenko/minesweeper#classic-style)
-  2. [RD style](https://github.com/rdiachenko/minesweeper#rd-style)
+First things first: Thanks to Henri Sarasvirta for the idea.
+
+Second: Thanks to @rdiachenko for a good looking base to implement the idea on top of.
+Check his branches README for extra info I decided to cut from here.
+
+## What's "Sweeper size"?
+
+Normal minesweeper square checks the 8 neighboring tiles, or simply the tiles in a 3 by 3 square around
+the tile itself. By increasing the square to 5 by 5 tiles, the game gets a lot harder, and my intuition
+says the probability of having to guess goes down. Win-Win.
 
 ## Required dependencies
 * SDL2
@@ -20,79 +22,28 @@ $ sudo dnf install SDL2 SDL2-devel SDL2_image SDL2_image-devel
 
 ## Build and install
 ```
-minesweeper]$ mkdir build && cd build
-minesweeper]$ cmake ../
-minesweeper]$ make
-minesweeper]$ make install
+$ mkdir build && cd build
+$ cmake ../
+$ make
+$ make install
 
 # after completion minesweeper should be installed in minesweeper/release folder
 ```
 
-## Launch
-```
-release]$ ./minesweeper [path to config]
-```
-
-## Launch with default configuration
+## Launch with 5x5 configuration
 ```
 # default configuration
-release]$ cat resources/classic.conf 
-mines=99
+
+$ cat resources/5x5.conf
+mines=40
 field_rows=16
 field_cols=30
+sweeper_size=5
 sprite_img=resources/classic.png
 sprite_txt=resources/classic.txt
 
 # launch
-release]$ ./minesweeper
+$ ./minesweeper resources/5x5.conf
 ```
-![](https://raw.githubusercontent.com/rdiachenko/minesweeper/master/screenshots/classic-in-progress.png)
+![](https://raw.githubusercontent.com/shiona/minesweeper/master/screenshots/5x5.png)
 
-![](https://raw.githubusercontent.com/rdiachenko/minesweeper/master/screenshots/classic-lose.png)
-
-## Launch with custom configuration
-### Classic style
-```
-# custom configuration
-release]$ cat resources/classic.conf 
-mines=10
-field_rows=10
-field_cols=10
-sprite_img=resources/classic.png
-sprite_txt=resources/classic.txt
-
-# launch
-release]$ ./minesweeper resources/classic.conf
-```
-![](https://raw.githubusercontent.com/rdiachenko/minesweeper/master/screenshots/classic-win.png)
-
-### RD style
-```
-# custom configuration
-release]$ cat resources/rd.conf 
-mines=99
-field_rows=16
-field_cols=30
-sprite_img=resources/rd.png
-sprite_txt=resources/rd.txt
-
-# launch
-release]$ ./minesweeper resources/rd.conf
-```
-![](https://raw.githubusercontent.com/rdiachenko/minesweeper/master/screenshots/rd-in-progress.png)
-
-![](https://raw.githubusercontent.com/rdiachenko/minesweeper/master/screenshots/rd-lose.png)
-
-```
-# custom configuration
-release]$ cat resources/rd.conf
-mines=7
-field_rows=7
-field_cols=14
-sprite_img=resources/rd.png
-sprite_txt=resources/rd.txt
-
-# launch
-release]$ ./minesweeper resources/rd.conf
-```
-![](https://raw.githubusercontent.com/rdiachenko/minesweeper/master/screenshots/rd-win.png)
