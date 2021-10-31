@@ -6,11 +6,11 @@
 #include "GameField.h"
 
 static const size_t INF = 123456789;
-
+/*
 static const int shiftCount = 8;
 static int rowShifts[shiftCount] = {-1, -1, 0, 1, 1, 1, 0, -1};
 static int colShifts[shiftCount] = {0, 1, 1, 1, 0, -1, -1, -1};
-
+*/
 enum class GameState
 {
 	INIT,
@@ -50,7 +50,7 @@ size_t GameField::clipId(size_t row, size_t col, bool gameOver)
 		return content;
 	}
 
-	// TODO: If both buttons are held, a 3x3 area should be PRESSED
+	// TODO: If both buttons are held, a sweeper_area squared should be PRESSED
 	if (row == pressedRow && col == pressedCol)
 	{
 		switch (front[row][col])
@@ -132,7 +132,7 @@ void GameField::reveal(size_t row, size_t col)
 
 void GameField::revealArea(size_t row, size_t col)
 {
-	modifyAround(row, col, 3, [this](GridFront& /*unused*/, GridBack& /*unused*/, size_t r, size_t c) {
+	modifyAround(row, col, cfg->getSweeperSize(), [this](GridFront& /*unused*/, GridBack& /*unused*/, size_t r, size_t c) {
 			reveal(r, c);
 			});
 }
@@ -190,7 +190,7 @@ bool GameField::isSatisfied(size_t row, size_t col)
 {
 	//[[ assert: front[row][col] == GridFront::Revealed ]];
 	//[[ assert: back[row][col] :: GridBack::Clear ]];
-	unsigned int flags = countAround(row, col, 3, 
+	unsigned int flags = countAround(row, col, cfg->getSweeperSize(), 
 			[](GridFront front, GridBack /*unused*/) { return front == GridFront::Flag; });
 	return flags == numbers[row][col];
 }
@@ -303,7 +303,6 @@ void GameField::reset()
 	generateField();
 	pressedRow = INF;
 	pressedCol = INF;
-	smileBar->smileState = Clip::SMILE_INIT;
 	gameState = GameState::INIT;
 }
 
@@ -326,6 +325,7 @@ void GameField::generateField()
 	back = std::vector(rowCount, std::vector(colCount, GridBack::Clear));
 	numbers = std::vector(rowCount, std::vector(colCount, size_t(0)));
 
+	// Set the mines
 	for (int i = 0; i < totalCellCount; i++)
 	{   
 		if (cells[i] < 0)
@@ -333,19 +333,21 @@ void GameField::generateField()
 			int row = i / colCount;
 			int col = i % colCount;
 			back[row][col] = GridBack::Mine;
-
-			for (int k = 0; k < shiftCount; k++)
-			{   
-				int rowShift = row + rowShifts[k];
-				int colShift = col + colShifts[k];
-				if (rowShift >= 0 && static_cast<size_t>(rowShift) < rowCount
-						&& colShift >= 0 && static_cast<size_t>(colShift) < colCount
-						&& cells[rowShift * colCount + colShift] >= 0)
-				{   
-					numbers[rowShift][colShift]++;
-				}   
-			}   
 		}   
+	}
+
+	// Calculate numbers for the grid
+	for (size_t row = 0; row < rowCount; row++)
+	{
+		for (size_t col = 0; col < colCount; col++)
+		{
+			if (back[row][col] == Mine)
+				continue;
+
+			numbers[row][col] = countAround(row, col, cfg->getSweeperSize(), 
+					[](GridFront /*unused*/, GridBack back) {
+					return back == Mine; });
+		}
 	}
 }
 
@@ -364,7 +366,8 @@ void GameField::openEmptyCells(size_t row, size_t col)
 
 		if(numbers[row][col] == 0)
 		{
-			modifyAround(row, col, 3, [&queue](GridFront& front, GridBack& /*unused*/, size_t newRow, size_t newCol) {
+			modifyAround(row, col, cfg->getSweeperSize(), 
+					[&queue](GridFront& front, GridBack& /*unused*/, size_t newRow, size_t newCol) {
 					// Check if this is correct or how Flags and esp. Qms are handled
 					if(front == Blank) { 
 						front = Revealed; 

@@ -21,6 +21,7 @@ class Config
 		size_t getMineCnt();
 		size_t getFieldRowCnt();
 		size_t getFieldColCnt();
+		size_t getSweeperSize();
 		std::string getSpritePath();
 		SDL_Rect* getClip(size_t type);
 
@@ -30,6 +31,7 @@ class Config
 		size_t mineCnt;
 		size_t fieldRowCnt;
 		size_t fieldColCnt;
+		size_t sweeperSize;
 		std::string spritePath;
 		std::map<size_t, SDL_Rect> clips;
 		void loadConfig(std::string path);

@@ -35,6 +35,11 @@ size_t Config::getFieldColCnt()
 	return fieldColCnt;
 }
 
+size_t Config::getSweeperSize()
+{
+	return sweeperSize;
+}
+
 std::string Config::getSpritePath()
 {
 	return spritePath;
@@ -92,6 +97,10 @@ void Config::loadConfig(std::string path)
 			else if (key == "sprite_txt")
 			{
 				loadClips(value);
+			}
+			else if (key == "sweeper_size")
+			{
+				sweeperSize = atoi(value);
 			}
 			else
 			{
