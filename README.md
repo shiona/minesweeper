@@ -11,6 +11,11 @@ Normal minesweeper square checks the 8 neighboring tiles, or simply the tiles in
 the tile itself. By increasing the square to 5 by 5 tiles, the game gets a lot harder, and my intuition
 says the probability of having to guess goes down. Win-Win.
 
+## Known Bugs
+
+With the larger sweepers, larger numbers are possible. With missing graphics, the game breaks
+if it tries to render a square with a number larger than 8.
+
 ## Required dependencies
 * SDL2
 * SDL2_image
