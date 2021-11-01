@@ -71,6 +71,7 @@ void GameLoop::run()
 		{
 			onEvent(&event);
 		}
+		// TODO: Only draw actual updates, not every "frame"
 		SDL_SetRenderDrawColor(renderer,
 				Config::BACKGROUND_COLOR_R,
 				Config::BACKGROUND_COLOR_G,
@@ -80,6 +81,7 @@ void GameLoop::run()
 		smileBar->render(texture, renderer);
 		gameField->render(texture, renderer);
 		SDL_RenderPresent(renderer);
+		SDL_Delay(5);
 	}
 }
 
