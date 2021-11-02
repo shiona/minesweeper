@@ -17,7 +17,7 @@ class SmileBar
 		SmileBar(Config* config);
 		~SmileBar() = default;
 		void render(Texture& texture, SDL_Renderer* const renderer);
-		void handleEvent(SDL_Event* event, GameField* gameField);
+		bool handleEvent(SDL_Event* event, GameField* gameField);
 
 	private:
 		Config* cfg;

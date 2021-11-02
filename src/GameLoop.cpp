@@ -65,35 +65,43 @@ void GameLoop::run()
 	SDL_Event event;
 	Texture texture(renderer, cfg->getSpritePath());
 
+	// Initial render
+	SDL_RenderClear(renderer);
+	smileBar->render(texture, renderer);
+	gameField->render(texture, renderer);
+	SDL_RenderPresent(renderer);
+
 	while (running)
 	{
-		while (SDL_PollEvent(&event))
+		SDL_WaitEvent(&event);
+		bool change = onEvent(&event);
+
+		if(change)
 		{
-			onEvent(&event);
+			SDL_SetRenderDrawColor(renderer,
+					Config::BACKGROUND_COLOR_R,
+					Config::BACKGROUND_COLOR_G,
+					Config::BACKGROUND_COLOR_B,
+					Config::BACKGROUND_COLOR_OPAQUE);
+			SDL_RenderClear(renderer);
+			smileBar->render(texture, renderer);
+			gameField->render(texture, renderer);
+			SDL_RenderPresent(renderer);
 		}
-		// TODO: Only draw actual updates, not every "frame"
-		SDL_SetRenderDrawColor(renderer,
-				Config::BACKGROUND_COLOR_R,
-				Config::BACKGROUND_COLOR_G,
-				Config::BACKGROUND_COLOR_B,
-				Config::BACKGROUND_COLOR_OPAQUE);
-		SDL_RenderClear(renderer);
-		smileBar->render(texture, renderer);
-		gameField->render(texture, renderer);
-		SDL_RenderPresent(renderer);
-		SDL_Delay(5);
 	}
 }
 
-void GameLoop::onEvent(SDL_Event* event)
+bool GameLoop::onEvent(SDL_Event* event)
 {
+	bool change = false;
 	if (event->type == SDL_QUIT)
 	{
 		running = false;
 	}
 	else
 	{
-		gameField->handleEvent(event, smileBar);
-		smileBar->handleEvent(event, gameField);
+		change |= gameField->handleEvent(event, smileBar);
+		change |= smileBar->handleEvent(event, gameField);
 	}
+	return change;
 }

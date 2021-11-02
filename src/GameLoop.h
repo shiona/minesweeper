@@ -19,7 +19,7 @@ class GameLoop
 		SmileBar* smileBar;
 		GameField* gameField;
 		bool running;
-		void onEvent(SDL_Event* event);
+		bool onEvent(SDL_Event* event);
 };
 
 #endif

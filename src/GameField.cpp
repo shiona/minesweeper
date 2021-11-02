@@ -195,11 +195,11 @@ bool GameField::isSatisfied(size_t row, size_t col)
 	return flags == numbers[row][col];
 }
 
-void GameField::handleEvent(SDL_Event* event, SmileBar* smileBar)
+bool GameField::handleEvent(SDL_Event* event, SmileBar* smileBar)
 {
 	if (gameState != GameState::IN_PROGRESS && gameState != GameState::INIT)
 	{
-		return;
+		return false;
 	}
 	int x = (event->button).x;
 	int y = (event->button).y;
@@ -208,6 +208,8 @@ void GameField::handleEvent(SDL_Event* event, SmileBar* smileBar)
 	size_t row = (y - topBarHeight) / clip->h;
 	size_t col = x / clip->w;
 	auto btnType = (event->button).button;
+
+	bool change = false;
 
 	if (event->type == SDL_MOUSEBUTTONDOWN)
 	{
@@ -218,12 +220,14 @@ void GameField::handleEvent(SDL_Event* event, SmileBar* smileBar)
 				pressedRow = row;
 				pressedCol = col;
 				smileBar->smileState = Clip::SMILE_WONDER;
+				change = true;
 			}
 			break;
 		case SDL_BUTTON_RIGHT:
 			if (insideField(x, y))
 			{
 				cycleFlagQm(row, col, smileBar);
+				change = true;
 			}
 		}
 	}
@@ -254,6 +258,7 @@ void GameField::handleEvent(SDL_Event* event, SmileBar* smileBar)
 			}
 			pressedRow = pressedCol = INF;
 			smileBar->smileState = Clip::SMILE_INIT;
+			change = true;
 		}
 	}
 	else if (event->type == SDL_MOUSEMOTION)
@@ -263,14 +268,25 @@ void GameField::handleEvent(SDL_Event* event, SmileBar* smileBar)
 		{
 			if (insideField(x, y))
 			{
-				pressedRow = row;
-				pressedCol = col;	
-				smileBar->smileState = Clip::SMILE_WONDER;
+				if (pressedRow != row || pressedCol != col)
+				{
+					pressedRow = row;
+					pressedCol = col;
+					if (pressedRow == INF && pressedCol == INF)
+					{
+						smileBar->smileState = Clip::SMILE_WONDER;
+					}
+					change = true;
+				}
 			}
-			else 
+			else
 			{
-				pressedRow = pressedCol = INF;
-				smileBar->smileState = Clip::SMILE_INIT;
+				if (pressedRow != INF && pressedCol != INF)
+				{
+					pressedRow = pressedCol = INF;
+					smileBar->smileState = Clip::SMILE_INIT;
+					change = true;
+				}
 			}
 		}
 	}
@@ -289,6 +305,7 @@ void GameField::handleEvent(SDL_Event* event, SmileBar* smileBar)
 		openAllFlags();
 		// TODO: Leaderboard?
 	}
+	return change;
 }
 
 void GameField::reset()

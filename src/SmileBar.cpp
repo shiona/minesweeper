@@ -55,8 +55,9 @@ void SmileBar::render(Texture& texture, SDL_Renderer* const renderer)
 	renderTimeCount(texture, renderer);
 }
 
-void SmileBar::handleEvent(SDL_Event* event, GameField* gameField)
+bool SmileBar::handleEvent(SDL_Event* event, GameField* gameField)
 {
+	bool change = false;
 	if (event->type == SDL_MOUSEBUTTONDOWN)
 	{
 		if ((event->button).button == SDL_BUTTON_LEFT)
@@ -64,6 +65,7 @@ void SmileBar::handleEvent(SDL_Event* event, GameField* gameField)
 			if (insideSmile((event->button).x, (event->button).y))
 			{
 				smileState = Clip::SMILE_PRESSED;
+				change = true;
 			}
 		}
 	}
@@ -76,9 +78,11 @@ void SmileBar::handleEvent(SDL_Event* event, GameField* gameField)
 				smileState = Clip::SMILE_INIT;
 				reset();
 				gameField->reset();
+				change = true;
 			}
 		}
 	}
+	return change;
 }
 
 void SmileBar::renderTimeCount(Texture& texture, SDL_Renderer* const renderer)

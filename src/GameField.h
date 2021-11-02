@@ -20,7 +20,7 @@ class GameField
 	public:
 		GameField(Config* config);
 		void render(Texture& texture, SDL_Renderer* const renderer);
-		void handleEvent(SDL_Event* event, SmileBar* smileBar);
+		bool handleEvent(SDL_Event* event, SmileBar* smileBar);
 
 	private:
 		enum GridFront {
