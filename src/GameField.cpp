@@ -26,7 +26,7 @@ GameField::GameField(Config* config)
 	generateField();
 }
 
-/* 
+/*
  * Return the Clip ID (Config.h) of a square on the grid for renderer
  */
 size_t GameField::clipId(size_t row, size_t col, bool gameOver)
@@ -185,12 +185,12 @@ unsigned int GameField::countAround(size_t row, size_t col, size_t size, bool (*
 	return result;
 }
 
-bool GameField::isSatisfied(size_t row, size_t col) 
+bool GameField::isSatisfied(size_t row, size_t col)
 	//[[ expects: front[row][col] == GridFront::Revealed, back[row][col] == GridBack::Clear ]]
 {
 	//[[ assert: front[row][col] == GridFront::Revealed ]];
 	//[[ assert: back[row][col] :: GridBack::Clear ]];
-	unsigned int flags = countAround(row, col, cfg->getSweeperSize(), 
+	unsigned int flags = countAround(row, col, cfg->getSweeperSize(),
 			[](GridFront front, GridBack /*unused*/) { return front == GridFront::Flag; });
 	return flags == numbers[row][col];
 }
@@ -216,12 +216,12 @@ void GameField::handleEvent(SDL_Event* event, SmileBar* smileBar)
 			if (insideField(x, y))
 			{
 				pressedRow = row;
-				pressedCol = col;	
+				pressedCol = col;
 				smileBar->smileState = Clip::SMILE_WONDER;
 			}
 			break;
 		case SDL_BUTTON_RIGHT:
-			if (insideField(x, y)) 
+			if (insideField(x, y))
 			{
 				cycleFlagQm(row, col, smileBar);
 			}
@@ -232,7 +232,7 @@ void GameField::handleEvent(SDL_Event* event, SmileBar* smileBar)
 		// TODO: Optional values
 		if(pressedRow != INF && pressedCol != INF)
 		{
-			if (front[pressedRow][pressedCol] == GridFront::Blank) 
+			if (front[pressedRow][pressedCol] == GridFront::Blank)
 			{
 				if (gameState == GameState::INIT)
 				{
@@ -327,13 +327,13 @@ void GameField::generateField()
 
 	// Set the mines
 	for (int i = 0; i < totalCellCount; i++)
-	{   
+	{
 		if (cells[i] < 0)
-		{   
+		{
 			int row = i / colCount;
 			int col = i % colCount;
 			back[row][col] = GridBack::Mine;
-		}   
+		}
 	}
 
 	// Calculate numbers for the grid
@@ -344,7 +344,7 @@ void GameField::generateField()
 			if (back[row][col] == Mine)
 				continue;
 
-			numbers[row][col] = countAround(row, col, cfg->getSweeperSize(), 
+			numbers[row][col] = countAround(row, col, cfg->getSweeperSize(),
 					[](GridFront /*unused*/, GridBack back) {
 					return back == Mine; });
 		}
@@ -366,11 +366,11 @@ void GameField::openEmptyCells(size_t row, size_t col)
 
 		if(numbers[row][col] == 0)
 		{
-			modifyAround(row, col, cfg->getSweeperSize(), 
+			modifyAround(row, col, cfg->getSweeperSize(),
 					[&queue](GridFront& front, GridBack& /*unused*/, size_t newRow, size_t newCol) {
 					// Check if this is correct or how Flags and esp. Qms are handled
-					if(front == Blank) { 
-						front = Revealed; 
+					if(front == Blank) {
+						front = Revealed;
 						queue.push({newRow, newCol}); }
 					});
 		}
